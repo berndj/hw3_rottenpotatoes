@@ -11,14 +11,14 @@ Given /the following movies exist/ do |movies_table|
 end
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  puts "debug [#{page.methods}]"
-  page.driver.html.content.match(/#{e1}.*#{e2}/)
+  #puts "debug [#{page.methods}]"
+  page.body.match(/#{e1}.*#{e2}/)
 
 end
 
 When /I (un)?check the following ratings: "(.*)"/ do |uncheck, rating_list|
   rating_list.sub("\"","").split.each do |rating|
-    puts "debug [#{rating}]"
+    #puts "debug [#{rating}]"
 
     if uncheck == "un"
       uncheck("ratings[#{rating}]")
