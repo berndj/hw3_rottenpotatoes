@@ -23,8 +23,19 @@ Background: movies have been added to database
   
 Scenario: restrict to movies with 'PG' or 'R' ratings
   When I check the following ratings: "PG R"
-  And I uncheck the following ratings: "G PG-13 NC-17"
-  
+  And when I uncheck the following ratings: "G PG-13 NC-17"
+  And when I press "Refresh"
+  Then I should see "Terminator"
+  Then I should see "Harry"
+  Then I should see "Amelie" 
+  Then I should see "Incredibles"
+  Then I should see "Raiders"
+  Then I should not see "Odyssey"
+  Then I should not see "Alladin"
+  Then I should not see "The Help"
+  Then I should not see "Chocolat"
+  Then I should not see "Chicken"  
+
   # enter step(s) to check the 'PG' and 'R' checkboxes
   # enter step(s) to uncheck all other checkboxes
   # enter step to "submit" the search form on the homepage
