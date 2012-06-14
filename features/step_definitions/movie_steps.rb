@@ -11,7 +11,9 @@ Given /the following movies exist/ do |movies_table|
 end
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  page.content.match(/#{e1}.*#{e2}/)
+  puts "debug [#{page.methods}]"
+  page.driver.html.content.match(/#{e1}.*#{e2}/)
+
 end
 
 When /I (un)?check the following ratings: "(.*)"/ do |uncheck, rating_list|
@@ -29,3 +31,4 @@ end
 When /I press "(.*)"/ do |button|
   click_button(button.sub("\"",""))
 end
+
