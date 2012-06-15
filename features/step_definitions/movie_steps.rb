@@ -11,14 +11,14 @@ Given /the following movies exist/ do |movies_table|
 end
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  #puts "debug [#{page.methods}]"
+  # puts "debug [#{page.methods}]"
   page.body.match(/#{e1}.*#{e2}/)
 
 end
 
-When /I (un)?check the following ratings: "(.*)"/ do |uncheck, rating_list|
-  rating_list.sub("\"","").split.each do |rating|
-    #puts "debug [#{rating}]"
+When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
+  rating_list.gsub(" ","").split(",").each do |rating|
+#    puts "debug [#{rating}]"
 
     if uncheck == "un"
       uncheck("ratings[#{rating}]")
@@ -27,6 +27,32 @@ When /I (un)?check the following ratings: "(.*)"/ do |uncheck, rating_list|
     end
   end
 end
+
+Then /I should ?(not|)? see movies with ratings: (.*)/ do |uncheck, rating_list|
+  val = true
+
+  #  puts "debug [#{rating}]"
+  if uncheck == false
+    return true
+  end
+  Movie.find_each do |movie|
+    if page.body.include?(movie.title)
+      found = false
+      rating_list.gsub(" ","").split(",").each do |rating|
+        if movie.rating == rating
+          found=true
+        end
+      end
+      if false==found
+        val=false
+        break
+      end
+    end
+  end
+
+  val
+end
+
 
 When /I (un)?check all ratings/ do |uncheck|
   Movie.all_ratings.each do |rating|
@@ -38,21 +64,21 @@ When /I (un)?check all ratings/ do |uncheck|
   end
 end
 
-Then /I should see (all|no) movie/ do |check|
+Then /I should see (all|none) of the movies/ do |check|
   val = true
-  puts "#{page.body}"
+  # puts "#{page.body}"
   if check == "no"
     Movie.find_each do |movie|
-      puts "no: #{movie.title}"
+      # puts "no: #{movie.title}"
       if page.body.include?(movie.title)
         val = false
-        puts "no: break false"
+        # puts "no: break false"
         break
       end
     end
   elsif check == "all"
     Movie.find_each do |movie|
-      puts "all: #{movie.title}"
+      # puts "all: #{movie.title}"
       if page.body.include?(movie.title)==false
         val = false
         break
