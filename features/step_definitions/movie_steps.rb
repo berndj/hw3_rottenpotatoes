@@ -26,7 +26,7 @@ Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
       pos1 += 1
     end
   end
-  page.body.split(" ").each do |str|
+  page.body.split("\n").each do |str|
     #    puts "debug [#{str}]"
     if str.match(/#{e2}/) != nil
       break
