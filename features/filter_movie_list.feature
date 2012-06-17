@@ -41,6 +41,7 @@ Scenario: no ratings selected
   Then I should see none of the movies
 
 Scenario: all ratings selected
+#  When I check the following ratings: PG
   When I check all ratings
   And when I press "Refresh"
   Then I should see all of the movies

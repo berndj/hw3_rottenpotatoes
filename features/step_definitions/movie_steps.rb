@@ -10,10 +10,34 @@ Given /the following movies exist/ do |movies_table|
   end
 end
 
-Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  # puts "debug [#{page.methods}]"
-  page.body.match(/#{e1}.*#{e2}/)
+#Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+#  puts "debug [#{e1} before #{e2}]"
+#  assert page.body.match(/.*#{e1}.*#{e2}/m) != nil
+#end
 
+Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+
+  pos1=0
+  pos2=0
+  page.body.split("\n").each do |str|
+    if str.match(/#{e1}/) != nil
+      break
+    else
+      pos1 += 1
+    end
+  end
+  page.body.split("\n").each do |str|
+    #    puts "debug [#{str}]"
+    if str.match(/#{e2}/) != nil
+      break
+    else
+      pos2 += 1
+    end
+  end
+  puts "debug [#{page.body}]"
+
+  puts "debug [#{pos1} before #{pos2}]"
+  assert pos1 < pos2
 end
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
@@ -28,29 +52,29 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   end
 end
 
-Then /I should ?(not|)? see movies with ratings: (.*)/ do |uncheck, rating_list|
+Then /I should ?(not)? see movies with ratings: (.*)/ do |uncheck, rating_list|
   val = true
 
   #  puts "debug [#{rating}]"
   if uncheck == false
-    return true
-  end
-  Movie.find_each do |movie|
-    if page.body.include?(movie.title)
-      found = false
-      rating_list.gsub(" ","").split(",").each do |rating|
-        if movie.rating == rating
-          found=true
+    val = false
+  else
+    Movie.find_each do |movie|
+      if page.body.include?(movie.title)
+        found = false
+        rating_list.gsub(" ","").split(",").each do |rating|
+          if movie.rating == rating
+            found=true
+          end
         end
-      end
-      if false==found
-        val=false
-        break
+        if false==found
+          val=false
+          break
+        end
       end
     end
   end
-
-  val
+  assert_equal val,true
 end
 
 
@@ -65,33 +89,14 @@ When /I (un)?check all ratings/ do |uncheck|
 end
 
 Then /I should see (all|none) of the movies/ do |check|
-  val = true
-  # puts "#{page.body}"
-  if check == "no"
-    Movie.find_each do |movie|
+
+  Movie.find_each do |movie|
       # puts "no: #{movie.title}"
-      if page.body.include?(movie.title)
-        val = false
-        # puts "no: break false"
-        break
-      end
-    end
-  elsif check == "all"
-    Movie.find_each do |movie|
-      # puts "all: #{movie.title}"
-      if page.body.include?(movie.title)==false
-        val = false
-        break
-      end
-    end
-  else
-    val = false
+      assert page.has_content?(movie.title)==false if check == "no"
+      assert page.has_content?(movie.title) if check == "all"
   end
 
-  val
 end
-
-
 
 
 When /I press "(.*)"/ do |button|
