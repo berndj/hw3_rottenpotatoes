@@ -56,8 +56,22 @@ Then /I should ?(not)? see movies with ratings: (.*)/ do |uncheck, rating_list|
   val = true
 
   #  puts "debug [#{rating}]"
-  if uncheck == false
-    val = false
+  if uncheck == "not"
+    Movie.find_each do |movie|
+      if page.body.include?(movie.title)
+        found = false
+        rating_list.gsub(" ","").split(",").each do |rating|
+          if movie.rating == rating
+            found=true
+          end
+        end
+        if true==found
+          val=false
+          break
+        end
+      end
+    end
+
   else
     Movie.find_each do |movie|
       if page.body.include?(movie.title)
