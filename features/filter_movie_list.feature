@@ -23,11 +23,11 @@ Background: movies have been added to database
   
 Scenario: restrict to movies with 'PG' or 'R' ratings
   When I check the following ratings: PG, R
-  And when I uncheck the following ratings: PG-13, R, NC-17
-  And When I check all ratings
+  And when I uncheck the following ratings: PG-13, G, NC-17
+#  And When I check all ratings
   And when I press "Refresh"
   Then I should see movies with ratings: PG, R
-  Then I should not see movies with ratings: PG-13, R, NC-17
+  Then I should not see movies with ratings: PG-13, G, NC-17
 
   # enter step(s) to check the 'PG' and 'R' checkboxes
   # enter step(s) to uncheck all other checkboxes

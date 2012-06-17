@@ -1,7 +1,7 @@
 
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
-   puts "debug db filling #{movie.inspect}"
+#   puts "debug db filling #{movie.inspect}"
     m = Movie.new
     m.title = movie[:title]
     m.rating = movie[:rating]
@@ -53,33 +53,19 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
 end
 
 Then /I should ?(not)? see movies with ratings: (.*)/ do |uncheck, rating_list|
-  val = true
 
-  #  puts "debug [#{rating}]"
-  Movie.find_each do |movie|
-    if page.body.include?(movie.title)
-      found = false
-      rating_list.gsub(" ","").split(",").each do |rating|
-        debugger
-        if movie.rating == rating
-          found=true
-        end
-        if uncheck == "not"
-          if true==found
-            val=false
-            break
-          end
+  rating_list.gsub(" ","").split(",").each do |rating|
+    Movie.find_each do |movie|
+      if movie.rating == rating
+#        debugger
+        if uncheck != "no"
+          assert page.body.include?(movie.title), "#{movie.title}:#{movie.rating} found"
         else
-          if false==found
-            val=false
-            break
-          end
+          assert page.body.include?(movie.title)==false, "no: #{movie.title}:#{movie.rating} found"
         end
       end
-    end # page.body.include?(movie.title)
-  end # movie loop
-
-  assert_equal val,true
+    end
+  end
 end
 
 
