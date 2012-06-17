@@ -1,7 +1,7 @@
 
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
-#   puts "debug #{movie.inspect}"
+   puts "debug db filling #{movie.inspect}"
     m = Movie.new
     m.title = movie[:title]
     m.rating = movie[:rating]
@@ -26,7 +26,7 @@ Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
       pos1 += 1
     end
   end
-  page.body.split("\n").each do |str|
+  page.body.split(" ").each do |str|
     #    puts "debug [#{str}]"
     if str.match(/#{e2}/) != nil
       break
@@ -34,7 +34,7 @@ Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
       pos2 += 1
     end
   end
-  puts "debug [#{page.body}]"
+#  puts "debug [#{page.body}]"
 
   puts "debug [#{pos1} before #{pos2}]"
   assert pos1 < pos2
@@ -56,40 +56,32 @@ Then /I should ?(not)? see movies with ratings: (.*)/ do |uncheck, rating_list|
   val = true
 
   #  puts "debug [#{rating}]"
-  if uncheck == "not"
-    Movie.find_each do |movie|
-      if page.body.include?(movie.title)
-        found = false
-        rating_list.gsub(" ","").split(",").each do |rating|
-          if movie.rating == rating
-            found=true
+  Movie.find_each do |movie|
+    if page.body.include?(movie.title)
+      found = false
+      rating_list.gsub(" ","").split(",").each do |rating|
+        debugger
+        if movie.rating == rating
+          found=true
+        end
+        if uncheck == "not"
+          if true==found
+            val=false
+            break
+          end
+        else
+          if false==found
+            val=false
+            break
           end
         end
-        if true==found
-          val=false
-          break
-        end
       end
-    end
+    end # page.body.include?(movie.title)
+  end # movie loop
 
-  else
-    Movie.find_each do |movie|
-      if page.body.include?(movie.title)
-        found = false
-        rating_list.gsub(" ","").split(",").each do |rating|
-          if movie.rating == rating
-            found=true
-          end
-        end
-        if false==found
-          val=false
-          break
-        end
-      end
-    end
-  end
   assert_equal val,true
 end
+
 
 
 When /I (un)?check all ratings/ do |uncheck|
